@@ -1,4 +1,5 @@
 import axios from 'axios';
+// import { GetServerSideProps, GetStaticProps } from 'next';
 import { GetServerSideProps } from 'next';
 // import { useEffect, useState } from 'react';
 
@@ -34,6 +35,21 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
     },
   };
 };
+
+// export const getServerSideProps: GetStaticProps<Props> = async () => {
+//   const endpoint = `${process.env.STRAPI_URL}/posts`;
+//   const response = await axios.get<StrapiResponse>(endpoint, {
+//     headers: {
+//       Authorization: `Bearer ${process.env.STRAPI_API_KEY}`,
+//     },
+//   });
+//   const posts = response.data.data;
+//   return {
+//     props: {
+//       posts,
+//     },
+//   };
+// };
 
 export default function PostsPage(props: Props) {
   const { posts } = props;
