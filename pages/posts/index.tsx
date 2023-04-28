@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { GetServerSideProps } from 'next';
+// import { useEffect, useState } from 'react';
 
 interface Post {
   id: number;
@@ -12,24 +13,43 @@ interface Post {
   };
 }
 
-export default function PostsPage() {
-  const [posts, setPosts] = useState<Post[]>([]);
-  useEffect(() => {
-    const fetchPosts = async () => {
-      const response = await axios.get<Post[]>(
-        'https://localhost:1337/api/posts',
-        {
-          headers: {
-            Authorization:
-              'Bearer 1856481f2382c326b94d45b56e3664eb15ee55752a5ad05b2340fb9903c25e105984bbd73cc1fb723a6e731ecbc3678fb82cdfe0eef40b65d7170ddaf0ca3fc9632f8e69ac7df921af1b186e1a1ecc6bbb1dd17c16c4ab165f13810da31e575b063e9b375d8d22fb02fcf1996b53e1c8130fd2d8f3d377c39d7381c2ce3d3200',
-          },
-        }
-      );
-      setPosts(response.data);
-      console.log(response.data);
-    };
-    fetchPosts();
-  }, []);
+interface StrapiResponse {
+  data: Post[];
+}
+interface Props {
+  posts: Post[];
+}
+
+export const getServerSideProps: GetServerSideProps<Props> = async () => {
+  const endpoint = `${process.env.STRAPI_URL}/posts`;
+  const response = await axios.get<StrapiResponse>(endpoint, {
+    headers: {
+      Authorization: `Bearer ${process.env.STRAPI_API_KEY}`,
+    },
+  });
+  const posts = response.data.data;
+  return {
+    props: {
+      posts,
+    },
+  };
+};
+
+export default function PostsPage(props: Props) {
+  const { posts } = props;
+  // const [posts, setPosts] = useState<Post[]>([]);
+  // useEffect(() => {
+  //   const fetchPosts = async () => {
+  //     const endpoint = `${process.env.NEXT_PUBLIC_STRAPI_URL}/posts`;
+  //     const response = await axios.get<StrapiResponse>(endpoint, {
+  //       headers: {
+  //         Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_KEY}`,
+  //       },
+  //     });
+  //     setPosts(response.data.data);
+  //   };
+  //   fetchPosts();
+  // }, []);
   return (
     <section>
       <h1>Posts</h1>
